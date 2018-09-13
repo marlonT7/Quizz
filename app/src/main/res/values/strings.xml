@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Quizz</string>
+    <string name="question">Question</string>
+    <string name="option_1">Option 1</string>
+    <string name="option_2">Option 2</string>
+    <string name="option_3">Option 3</string>
+    <string name="option_4">Option 4</string>
+    <string name="finish">Finish</string>
+    <string name="result">result</string>
+    <string name="result_label">You correct answer are: </string>
+</resources>
