@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
-import android.widget.RadioGroup
 import android.widget.TextView
 import kotlinx.android.synthetic.main.question_layout.view.*
 
@@ -24,24 +23,22 @@ class Adapter(private val questionnaire: Questionnaire, private val questionnair
     // Each data item is just a string in this case that is shown in a TextView.
     inner class MyViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         private lateinit var questionText: TextView
-        private lateinit var options: RadioGroup
+        private lateinit var option1: RadioButton
+        private lateinit var option2: RadioButton
+        private lateinit var option3: RadioButton
+        private lateinit var option4: RadioButton
 
         fun bind() {
             questionText = itemView.findViewById(R.id.question)
-            options = itemView.findViewById(R.id.options)
-
-
-            options.setOnCheckedChangeListener { group: RadioGroup, checkedId: Int ->
-                val answer = group.findViewById<RadioButton>(checkedId)
-                questionnaireAnswers.selectedAnswer(questionText.text.toString(), answer.text.toString())
-            }
-//            option1.setOnClickListener{
-//                questionnaireAnswers.selectedAnswer(questionText.text.toString(), option1.text.toString())
-//            }
-//            option2.setOnClickListener { questionnaireAnswers.selectedAnswer(questionText.text.toString(), option2.text.toString()) }
-//            option3.setOnClickListener { questionnaireAnswers.selectedAnswer(questionText.text.toString(), option3.text.toString()) }
-//            option4.setOnClickListener { questionnaireAnswers.selectedAnswer(questionText.text.toString(), option4.text.toString()) }
-//            // Move view logic to here from onBindViewHolder
+            option1 = itemView.findViewById(R.id.option1)
+            option2 = itemView.findViewById(R.id.option2)
+            option3 = itemView.findViewById(R.id.option3)
+            option4 = itemView.findViewById(R.id.option4)
+            option1.setOnClickListener { questionnaireAnswers.selectedAnswer(questionText.text.toString(), option1.text.toString()) }
+            option2.setOnClickListener { questionnaireAnswers.selectedAnswer(questionText.text.toString(), option2.text.toString()) }
+            option3.setOnClickListener { questionnaireAnswers.selectedAnswer(questionText.text.toString(), option3.text.toString()) }
+            option4.setOnClickListener { questionnaireAnswers.selectedAnswer(questionText.text.toString(), option4.text.toString()) }
+            // Move view logic to here from onBindViewHolder
         }
     }
 
@@ -67,55 +64,52 @@ class Adapter(private val questionnaire: Questionnaire, private val questionnair
 
     // Set values to the view and check options if has restored a previously state
     private fun bindView(holder: RecyclerView.ViewHolder, position: Int): RecyclerView.ViewHolder {
-        // Set the question
         val questionText: TextView = holder.itemView.question
-        // Set the options
         val option1: RadioButton = holder.itemView.option1
         val option2: RadioButton = holder.itemView.option2
         val option3: RadioButton = holder.itemView.option3
         val option4: RadioButton = holder.itemView.option4
+        val answer = questionnaire.answers[position]
+        setDefaultValues(option1)
+        setDefaultValues(option2)
+        setDefaultValues(option3)
+        setDefaultValues(option4)
+        // Set the question
         questionText.text = questionnaire.questions[position].question
+        // Set the options
         option1.text = questionnaire.questions[position].options[0]
         option2.text = questionnaire.questions[position].options[1]
         option3.text = questionnaire.questions[position].options[2]
         option4.text = questionnaire.questions[position].options[3]
         // set the selected answer and set color
-        if (!questionnaire.answers.isEmpty()) {
-            when {
-                questionnaire.answers[position] == option1.text -> {
-                    option1.isChecked = true
-                    showResults(option1, position)
-                }
-                questionnaire.answers[position] == option2.text -> {
-                    option2.isChecked = true
-                    showResults(option2, position)
-                }
-                questionnaire.answers[position] == option3.text -> {
-                    option3.isChecked = true
-                    showResults(option3, position)
-                }
-                questionnaire.answers[position] == option4.text -> {
-                    option4.isChecked = true
-                    showResults(option4, position)
-                }
-            }
-
+        when (answer) {
+            option1.text -> showResults(option1, position)
+            option2.text -> showResults(option2, position)
+            option3.text -> showResults(option3, position)
+            option4.text -> showResults(option4, position)
         }
         return holder
     }
 
     //If the answer is correct, ser green the color text, is the answer is wrong, set red the color text
-    private fun showResults(answer: RadioButton, position: Int) {
-        if (questionnaire.questions[position].isCorrect(selectedOption = answer.text.toString())) {
-            answer.setTextColor(Color.GREEN)
-        } else {
-            answer.setTextColor(Color.RED)
+    private fun showResults(option: RadioButton, position: Int) {
+        option.isChecked = true
+        if (!option.isChecked) {
+            return
         }
+        if (questionnaire.questions[position].isCorrect(selectedOption = option.text.toString())) {
+            option.setTextColor(Color.GREEN)
+        } else {
+            option.setTextColor(Color.RED)
+        }
+
+    }
+
+    private fun setDefaultValues(option: RadioButton) {
+        option.isChecked = false
+        option.setTextColor(Color.BLACK)
     }
 
     // Return the size of your dataSet (invoked by the layout manager)
     override fun getItemCount() = questionnaire.questions.size
 }
-
-
-

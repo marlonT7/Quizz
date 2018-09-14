@@ -10,13 +10,11 @@ import android.widget.TextView
 
 class MainActivity : AppCompatActivity(), Adapter.QuestionnaireAnswers {
     override fun selectedAnswer(question: String, answer: String) {
-        questionnaire.questions.forEach {
-            if (it.question == question) {
-                questionnaire.answers[questionnaire.questions.indexOf(it)] = answer
-                if (it.isCorrect(answer)) {
-
-                }
+        for (i in 0 until questionnaire.questions.size ) {
+            if (questionnaire.questions[i].question == question) {
+                questionnaire.answers[i] = answer
             }
+
         }
     }
 
