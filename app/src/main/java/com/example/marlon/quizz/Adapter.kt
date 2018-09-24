@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.TextView
 import kotlinx.android.synthetic.main.question_layout.view.*
 
@@ -14,7 +15,7 @@ class Adapter(private val questionnaire: Questionnaire, private val questionnair
         RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     interface QuestionnaireAnswers {
-        fun selectedAnswer(question: String, answer: String)
+        fun selectedAnswer(position: Int, answer: String)
     }
 
     // Provide a reference to the views for each data item
@@ -34,10 +35,10 @@ class Adapter(private val questionnaire: Questionnaire, private val questionnair
             option2 = itemView.findViewById(R.id.option2)
             option3 = itemView.findViewById(R.id.option3)
             option4 = itemView.findViewById(R.id.option4)
-            option1.setOnClickListener { questionnaireAnswers.selectedAnswer(questionText.text.toString(), option1.text.toString()) }
-            option2.setOnClickListener { questionnaireAnswers.selectedAnswer(questionText.text.toString(), option2.text.toString()) }
-            option3.setOnClickListener { questionnaireAnswers.selectedAnswer(questionText.text.toString(), option3.text.toString()) }
-            option4.setOnClickListener { questionnaireAnswers.selectedAnswer(questionText.text.toString(), option4.text.toString()) }
+            option1.setOnClickListener { questionnaireAnswers.selectedAnswer(adapterPosition, option1.text.toString()) }
+            option2.setOnClickListener { questionnaireAnswers.selectedAnswer(adapterPosition, option2.text.toString()) }
+            option3.setOnClickListener { questionnaireAnswers.selectedAnswer(adapterPosition, option3.text.toString()) }
+            option4.setOnClickListener { questionnaireAnswers.selectedAnswer(adapterPosition, option4.text.toString()) }
             // Move view logic to here from onBindViewHolder
         }
     }
@@ -69,11 +70,15 @@ class Adapter(private val questionnaire: Questionnaire, private val questionnair
         val option2: RadioButton = holder.itemView.option2
         val option3: RadioButton = holder.itemView.option3
         val option4: RadioButton = holder.itemView.option4
+        val options: RadioGroup= holder.itemView.options
         val answer = questionnaire.answers[position]
-        setDefaultValues(option1)
-        setDefaultValues(option2)
-        setDefaultValues(option3)
-        setDefaultValues(option4)
+
+        // Instead of setDefault
+        options.clearCheck()
+        option1.setTextColor(Color.BLACK)
+        option2.setTextColor(Color.BLACK)
+        option3.setTextColor(Color.BLACK)
+        option4.setTextColor(Color.BLACK)
         // Set the question
         questionText.text = questionnaire.questions[position].question
         // Set the options
@@ -94,9 +99,9 @@ class Adapter(private val questionnaire: Questionnaire, private val questionnair
     //If the answer is correct, ser green the color text, is the answer is wrong, set red the color text
     private fun showResults(option: RadioButton, position: Int) {
         option.isChecked = true
-        if (!option.isChecked) {
-            return
-        }
+//        if (!option.isChecked) {
+//            return
+//        }
         if (questionnaire.questions[position].isCorrect(selectedOption = option.text.toString())) {
             option.setTextColor(Color.GREEN)
         } else {
@@ -105,10 +110,10 @@ class Adapter(private val questionnaire: Questionnaire, private val questionnair
 
     }
 
-    private fun setDefaultValues(option: RadioButton) {
-        option.isChecked = false
-        option.setTextColor(Color.BLACK)
-    }
+//    private fun setDefaultValues(option: RadioButton) {
+//        //option.isChecked = false
+//        option.setTextColor(Color.BLACK)
+//    }
 
     // Return the size of your dataSet (invoked by the layout manager)
     override fun getItemCount() = questionnaire.questions.size
